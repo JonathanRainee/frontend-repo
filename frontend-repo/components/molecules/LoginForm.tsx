@@ -1,48 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CustomTextField from "../atoms/CustomTextField";
 import CustomButton from "../atoms/CustomButton";
 import ErrorText from "../atoms/ErrorText";
-import AuthPrompt from "./AuthPromot";
+import AuthPrompt from "./AuthPrompt";
 import { useRouter } from 'next/navigation';
-import { signInUser, LoginData } from "@/apis/userApi";
+import { LoginData } from "@/apis/userApi";
+import { signIn } from "@/store/action";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "@/store/store";
+import { login, resetStatus, setError, setSuccess } from "@/store/userSlice";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const { loading, error, success } = useSelector((state: RootState) => state.user);
 
+
+  useEffect(()=>{
+    dispatch(resetStatus());
+  }, [])
+  
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    dispatch(resetStatus());
     if (!email || !password) {
-      setError("Please fill in all fields");
+      dispatch(setError("Please fill all the fields."));
       return;
     }
 
     const loginData: LoginData = {email, password};
 
-    try {
-      const response = await signInUser(loginData);
-      console.log(response)
-      if(response != null){
-        console.log("test: ",response)
-        setSuccess(response.message);
-        setError("");
-        router.push('/home')
-      }else{
-        setError("Invalid credentials!")
-        console.log("gaad: ", response)
-        return;
+    try{
+      const resultAction = await dispatch(signIn(loginData));
+      if (signIn.fulfilled.match(resultAction)) {
+        const response = resultAction.payload;
+        dispatch(setError(""));
+        dispatch(setSuccess('Sign-in successful.'));
+        dispatch(
+          login({
+            id: response.user.uid,
+            name: '',
+            email: response.user.email,
+            age: 0,
+            token: response._tokenResponse.idToken,
+          })
+        );
+
+        setTimeout(() => {
+          router.push('/home');
+        }, 100);
+      } else if (signIn.rejected.match(resultAction)) {
+        dispatch(setError('Invalid credential.'));
       }
-    } catch (error) {
-      
+    } catch (error: any) {
+      dispatch(setError('An unexpected error occurred.'))
     }
-    
-    console.log({ email, password });
-    setError("")
   };
 
   return (

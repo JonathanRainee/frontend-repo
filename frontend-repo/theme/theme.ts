@@ -39,6 +39,9 @@ const theme = createTheme({
     error: {
       main: '#db2c2c',
     },
+    success:{
+      main: '#39a84f'
+    }
   },
 });
 
