@@ -1,6 +1,5 @@
 import { Paper } from "@mui/material";
 import HeadingText from "../atoms/HeadingText";
-import RegisterForm from "../molecules/RegisterForm";
 import LoginForm from "../molecules/LoginForm";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";

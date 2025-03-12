@@ -5,7 +5,6 @@ import { UserData } from "../../apis/userApi";
 import CustomTextField from "../atoms/CustomTextField";
 import CustomButton from "../atoms/CustomButton";
 import ErrorText from "../atoms/ErrorText";
-import { useRouter } from 'next/navigation';
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store/store";
 import { fetchUser, updateUser } from "@/store/action";
@@ -16,7 +15,6 @@ export default function UpdateUserForm() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState(0);
-  const router = useRouter();
 
   const user = useSelector((state: RootState) => state.user);
   const { loading, error, successMessage } = useSelector((state: RootState) => state.user);
@@ -88,10 +86,8 @@ export default function UpdateUserForm() {
         type="number"
       />      
       
-      {/* Display error message if there's an error */}
       {error && <ErrorText message={error} />}
 
-      {/* Display success message when there's a success */}
       {successMessage && <SuccessText message={successMessage} />}
 
       <CustomButton onClick={getUserData} type="button">Fetch</CustomButton>

@@ -19,11 +19,9 @@ export default function LoginForm() {
   const dispatch = useDispatch<AppDispatch>();
   const { loading, error, success } = useSelector((state: RootState) => state.user);
 
-
   useEffect(()=>{
     dispatch(resetStatus());
   }, [])
-  
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
